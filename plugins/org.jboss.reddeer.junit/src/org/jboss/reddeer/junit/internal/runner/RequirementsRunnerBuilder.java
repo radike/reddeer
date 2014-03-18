@@ -20,6 +20,8 @@ import org.junit.runners.model.RunnerBuilder;
  */
 public class RequirementsRunnerBuilder extends RunnerBuilder {
 
+	public TestsWithRunManager testsManager;
+
 	private Logger log = Logger.getLogger(RequirementsRunnerBuilder.class);
 	
 	private RequirementsBuilder requirementsBuilder = new RequirementsBuilder();
@@ -31,21 +33,25 @@ public class RequirementsRunnerBuilder extends RunnerBuilder {
 	private RunListener[] runListeners;
 	
 	public RequirementsRunnerBuilder(TestRunConfiguration config) {
-		this(config,null,null);
+		this(config,null,null, null);
 	}
 	
-	public RequirementsRunnerBuilder(TestRunConfiguration config , RunListener[] runListeners , List<IBeforeTest> beforeTestExtensions) {
+	public RequirementsRunnerBuilder(TestRunConfiguration config, RunListener[] runListeners,
+			List<IBeforeTest> beforeTestExtensions, TestsWithRunManager testsManager) {
 		this.config = config;
 		this.runListeners = runListeners;
 		this.beforeTestExtensions = beforeTestExtensions;
+		this.testsManager = testsManager;
 	}
 
 	@Override
 	public Runner runnerForClass(Class<?> clazz) throws Throwable {
 		log.info("Found test " + clazz);
+		testsManager.addTest(clazz);
 		Requirements requirements = requirementsBuilder.build(clazz, config.getRequirementConfiguration());
 		if (requirements.canFulfill()){
 			log.info("All requirements can be fulfilled, the test will run");
+			testsManager.addTestWithRun(clazz);
 			return new RequirementsRunner(clazz, requirements, config.getId(),runListeners, beforeTestExtensions);
 		} else {
 			log.info("All requirements cannot be fulfilled, the test will NOT run");
