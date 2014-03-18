@@ -12,6 +12,8 @@ import org.jboss.reddeer.junit.internal.extensionpoint.BeforeTestInitialization;
 import org.jboss.reddeer.junit.internal.runner.EmptySuite;
 import org.jboss.reddeer.junit.internal.runner.NamedSuite;
 import org.jboss.reddeer.junit.internal.runner.RequirementsRunnerBuilder;
+import org.jboss.reddeer.junit.internal.runner.TestsWithRunManager;
+import org.jboss.reddeer.junit.internal.runner.TestsWithoutRunSuite;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunListener;
 import org.junit.runners.Suite;
@@ -68,18 +70,28 @@ public class RedDeerSuite extends Suite {
 	 */
 	protected static List<Runner> createSuite(Class<?> clazz, SuiteConfiguration config) throws InitializationError{
 		log.info("Creating RedDeer suite...");
+		TestsWithRunManager testsManager = new TestsWithRunManager();
 		List<Runner> configuredSuites = new ArrayList<Runner>();
 		boolean isSuite = isSuite(clazz);
 		
 		for (TestRunConfiguration testRunConfig : config.getTestRunConfigurations()){
 			log.info("Adding suite with name " + testRunConfig.getId() + " to RedDeer suite");
 			if (isSuite){
-				configuredSuites.add(new NamedSuite(clazz, new RequirementsRunnerBuilder(testRunConfig,runListeners,beforeTestExtensions), testRunConfig.getId()));
+				configuredSuites.add(new NamedSuite(
+						clazz,
+						new RequirementsRunnerBuilder(testRunConfig, runListeners, beforeTestExtensions, testsManager),
+						testRunConfig.getId()));
 			} else {
-				configuredSuites.add(new NamedSuite(new Class[]{clazz}, new RequirementsRunnerBuilder(testRunConfig,runListeners,beforeTestExtensions), testRunConfig.getId()));				
+				configuredSuites.add(new NamedSuite(
+						new Class[] { clazz },
+						new RequirementsRunnerBuilder(testRunConfig, runListeners, beforeTestExtensions, testsManager),
+						testRunConfig.getId()));
 			}
 		}
 		
+		if(testsManager.testsWithoutRunCount() > 0) {
+			configuredSuites.add(new TestsWithoutRunSuite(clazz, testsManager));
+		}
 		log.info("RedDeer suite created");
 		return configuredSuites;
 	}
