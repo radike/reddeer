@@ -1,9 +1,13 @@
 package org.jboss.reddeer.eclipse.ui.console;
 
+import static org.hamcrest.CoreMatchers.containsString;
+
 import org.jboss.reddeer.swt.condition.WaitCondition;
 import org.jboss.reddeer.swt.exception.SWTLayerException;
+import org.jboss.reddeer.swt.impl.label.DefaultLabel;
 import org.jboss.reddeer.swt.impl.styledtext.DefaultStyledText;
 import org.jboss.reddeer.swt.impl.toolbar.DefaultToolItem;
+import org.jboss.reddeer.swt.matcher.WithTextMatcher;
 import org.jboss.reddeer.swt.wait.TimePeriod;
 import org.jboss.reddeer.swt.wait.WaitUntil;
 import org.jboss.reddeer.swt.wait.WaitWhile;
@@ -56,6 +60,8 @@ public class ConsoleView extends WorkbenchView {
 		DefaultToolItem terminate = new DefaultToolItem("Terminate");
 		if (terminate.isEnabled()) {
 			terminate.click();
+			// wait till the "<terminated" label appears
+			new DefaultLabel(new WithTextMatcher(containsString("<terminated>")));
 			log.info("Console terminated");
 		} else {
 			log.info("Console was terminated earlier");
@@ -76,7 +82,7 @@ public class ConsoleView extends WorkbenchView {
 
 		@Override
 		public String description() {
-			return "Console has no text";
+			return "console has styled text";
 		}
 		
 	}
@@ -106,7 +112,7 @@ public class ConsoleView extends WorkbenchView {
 
 		@Override
 		public String description() {
-			return "Console text is not \"" + this.consoleText + "\"";
+			return "console text is \"" + this.consoleText + "\"";
 		}
 
 	}

@@ -5,7 +5,6 @@ import org.hamcrest.core.IsEqual;
 import org.jboss.reddeer.junit.logging.Logger;
 import org.jboss.reddeer.swt.handler.WidgetHandler;
 import org.jboss.reddeer.swt.lookup.ShellLookup;
-import org.jboss.reddeer.swt.util.Utils;
 import org.jboss.reddeer.swt.util.internal.InstanceValidator;
 
 /**
@@ -50,7 +49,7 @@ public class ShellWithTextIsActive implements WaitCondition {
 
 	@Override
 	public String description() {
-		return "Shell with text matching" + matcher.toString() + " is active";
+		return "shell with text matching" + matcher.toString() + " is active";
 	}
 
 }

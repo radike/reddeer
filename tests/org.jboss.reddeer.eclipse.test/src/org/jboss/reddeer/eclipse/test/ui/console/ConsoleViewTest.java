@@ -3,7 +3,6 @@ package org.jboss.reddeer.eclipse.test.ui.console;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.hamcrest.core.IsEqual;
@@ -92,6 +91,8 @@ public class ConsoleViewTest extends RedDeerTest{
 	public void testTerminateConsole() {
 		
 		runTestClass(TEST_CLASS_LOOP_NAME);
+		AbstractWait.sleep(1000);
+		
 		consoleView = new ConsoleView();
 		consoleView.open();
 		consoleView.terminateConsole();
@@ -99,7 +100,7 @@ public class ConsoleViewTest extends RedDeerTest{
 		String text = consoleView.getConsoleText();
 		AbstractWait.sleep(1000);
 		String text2 = consoleView.getConsoleText();
-		assertTrue(text.contains("1\n"));
+		assertFalse(text.trim().isEmpty());
 		assertEquals(text, text2);
 		
 		DefaultToolItem terminate = new DefaultToolItem("Terminate");
